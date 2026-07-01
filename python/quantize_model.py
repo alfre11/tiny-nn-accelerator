@@ -139,6 +139,10 @@ def main():
     # -----------------------------
     X_test = np.load("data/X_test.npy").astype(np.float32)
     y_test = np.load("data/y_test.npy").astype(np.int64)
+    X_test_q = quantize_int8(X_test)
+    np.save("data/X_test_q.npy", X_test_q)
+    print("\nSaved quantized inputs:")
+    print("data/X_test_q.npy", X_test_q.shape, X_test_q.dtype)
 
     # -----------------------------
     # Compare floating-point and fixed-point accuracy
