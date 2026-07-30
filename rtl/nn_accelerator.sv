@@ -44,6 +44,7 @@ typedef enum logic [3:0] {
     L2_STORE,
     ARGMAX_INIT,
     ARGMAX_RUN,
+    ARGMAX_DONE,
     DONE
 } state_t;
 
@@ -97,8 +98,116 @@ always_comb begin
 end
 
 always_ff @(posedge clk) begin
-    
+    if (rst) begin
+        state <= IDLE;
+        done <= 1'b0;
+        prediction <= 4'd0;
 
+        input_idx <= '0;
+        hidden_idx <= '0;
+        output_idx <= '0;
+        l2_hidden_idx <= '0;
+        argmax_idx <= '0;
+
+        acc_reg <= '0;
+        max_value <= '0;
+        max_index <= 4'd0;
+    end else begin
+        case (state)
+            IDLE: begin
+                done <= 1'b0;
+
+                if (start) begin
+                    hidden_idx <= 0;
+                    input_idx <= 0;
+                    state <= L1_INIT;
+                end
+            end
+
+            L1_INIT: begin
+                acc_reg <= biases_l1[hidden_idx];
+                input_idx <= 0;
+                state <= L1_MAC;
+            end
+
+            L1_MAC: begin
+                acc_reg <= mac_acc_out;
+
+                if (input_idx == INPUT_SIZE - 1) begin
+                    state <= L1_STORE;
+                end else begin
+                    input_idx <= input_idx + 1'b1;
+                end
+            end
+
+            L1_STORE: begin
+                if ((acc_reg >>> SCALE_BITS) < 0)
+                    hidden_mem[hidden_idx] <= 0;
+                else
+                    hidden_mem[hidden_idx] <= acc_reg >>> SCALE_BITS;
+            end
+
+            L2_INIT: begin
+                acc_reg <= biases_l2[output_idx];
+                l2_hidden_idx <= 0;
+                state <= L2_MAC;
+            end
+
+            L2_MAC: begin
+                acc_reg <= mac_acc_out;
+
+                if (l2_hidden_idx == HIDDEN_SIZE - 1) begin
+                    state <= L2_STORE;
+                end else begin
+                    l2_hidden_idx <= l2_hidden_idx + 1'b1;
+                end
+            end
+
+            L2_STORE: begin
+                output_mem[output_idx] <= acc_reg >>> SCALE_BITS
+
+                if (output_idx == OUTPUT_SIZE - 1) begin
+                    state <= ARGMAX_INIT;
+                end else begin
+                    output_idx <= output_idx + 1'b1;
+                    state <= L2_INIT;
+                end
+            end
+
+            ARGMAX_INIT: begin
+                max_value <= output_mem[0]
+                max_index <= 4'd0;
+                argmax_idx <= 1;
+                state <= ARGMAX_RUN;
+            end
+
+            ARGMAX_RUN: begin
+                if (output_mem[argmax_idx] > max_value) begin
+                    max_value <= output_mem[argmax_idx];
+                    max_index <= argmax_idx[3:0];
+                end
+
+                if (argmax_idx == OUTPUT_SIZE - 1) begin
+                    state <= DONE;
+                end else begin
+                    argmax_idx <= argmax_idx + 1'b1;
+                end
+            end
+
+            ARGMAX_DONE: begin
+                prediction <= max_index
+                state <= DONE
+            end
+
+            DONE: begin
+                done <= 1'b1;
+                
+                if (!start) begin
+                    state <= IDLE
+                end
+            end
+        endcase
+    end
 end
 
 endmodule
