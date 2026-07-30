@@ -10,6 +10,10 @@ module nn_accelerator_tb;
 
     logic signed [31:0] expected_prediction [0:0];
     logic signed [31:0] expected_output [0:9];
+    logic signed [31:0] expected_hidden [0:15];
+
+    int output_errors;
+    int hidden_errors;
 
     nn_accelerator dut (
         .clk(clk),
@@ -24,10 +28,13 @@ module nn_accelerator_tb;
     initial begin
         $readmemh("data/mem/expected_prediction.mem", expected_prediction);
         $readmemh("data/mem/expected_output.mem", expected_output);
+        $readmemh("data/mem/expected_hidden.mem", expected_hidden);
 
         clk = 1'b0;
         rst = 1'b1;
         start = 1'b0;
+        output_errors = 0;
+        hidden_errors = 0;
 
         // Hold reset for a few cycles
         repeat (5) @(posedge clk);
@@ -66,6 +73,8 @@ module nn_accelerator_tb;
 
         disable fork;
 
+        $display("");
+        $display("Prediction check:");
         $display("Prediction:          %0d", prediction);
         $display("Expected prediction: %0d", expected_prediction[0]);
 
@@ -73,6 +82,28 @@ module nn_accelerator_tb;
             $display("PASS: prediction matches");
         end else begin
             $display("FAIL: prediction mismatch");
+        end
+
+        $display("");
+        $display("Hidden values:");
+
+        for (int i = 0; i < 16; i++) begin
+            $display(
+                "hidden_mem[%0d] = %0d, expected = %0d",
+                i,
+                dut.hidden_mem[i],
+                expected_hidden[i]
+            );
+
+            if (dut.hidden_mem[i] !== expected_hidden[i]) begin
+                hidden_errors++;
+            end
+        end
+
+        if (hidden_errors == 0) begin
+            $display("PASS: all hidden values match");
+        end else begin
+            $display("FAIL: %0d hidden values mismatched", hidden_errors);
         end
 
         $display("");
@@ -85,6 +116,28 @@ module nn_accelerator_tb;
                 dut.output_mem[i],
                 expected_output[i]
             );
+
+            if (dut.output_mem[i] !== expected_output[i]) begin
+                output_errors++;
+            end
+        end
+
+        if (output_errors == 0) begin
+            $display("PASS: all output logits match");
+        end else begin
+            $display("FAIL: %0d output logits mismatched", output_errors);
+        end
+
+        $display("");
+
+        if (
+            prediction == expected_prediction[0][3:0] &&
+            hidden_errors == 0 &&
+            output_errors == 0
+        ) begin
+            $display("OVERALL RESULT: PASS");
+        end else begin
+            $display("OVERALL RESULT: FAIL");
         end
 
         $finish;
