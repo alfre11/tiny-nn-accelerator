@@ -14,6 +14,7 @@ module nn_accelerator_tb;
 
     int output_errors;
     int hidden_errors;
+    int cycle_count;
 
     nn_accelerator dut (
         .clk(clk),
@@ -33,8 +34,10 @@ module nn_accelerator_tb;
         clk = 1'b0;
         rst = 1'b1;
         start = 1'b0;
+
         output_errors = 0;
         hidden_errors = 0;
+        cycle_count = 0;
 
         // Hold reset for a few cycles
         repeat (5) @(posedge clk);
@@ -55,7 +58,10 @@ module nn_accelerator_tb;
 
         fork
             begin
-                wait(done == 1'b1);
+                while (done != 1'b1) begin
+                    @(posedge clk);
+                    cycle_count++;
+                end
             end
 
             begin
@@ -72,6 +78,13 @@ module nn_accelerator_tb;
         join_any
 
         disable fork;
+
+        $display("");
+        $display("Cycle count:");
+        $display("Cycles from start wait to done: %0d", cycle_count);
+
+        $display("Inference time at 100 MHz: %0d ns", cycle_count * 10);
+        $display("Approx throughput at 100 MHz: %0d inferences/sec", 100000000 / cycle_count);
 
         $display("");
         $display("Prediction check:");
