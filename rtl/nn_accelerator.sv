@@ -27,7 +27,7 @@ module nn_accelerator #(
     logic signed [ACC_WIDTH-1:0] output_mem [0:OUTPUT_SIZE-1];
 
     initial begin
-        $readmemh("data/mem/input.mem",      input_mem);
+        // $readmemh("data/mem/input.mem",      input_mem);
         $readmemh("data/mem/weights_l1.mem", weights_l1);
         $readmemh("data/mem/biases_l1.mem",  biases_l1);
         $readmemh("data/mem/weights_l2.mem", weights_l2);
@@ -121,6 +121,9 @@ module nn_accelerator #(
                     if (start) begin
                         hidden_idx <= '0;
                         input_idx <= '0;
+                        output_idx <= '0;
+                        l2_hidden_idx <= '0;
+                        argmax_idx <= '0;
                         state <= L1_INIT;
                     end
                 end
@@ -211,7 +214,10 @@ module nn_accelerator #(
 
                 DONE_STATE: begin
                     done <= 1'b1;
-                    state <= DONE_STATE;
+
+                    if (!start) begin
+                        state <= IDLE;
+                    end
                 end
 
                 default: begin

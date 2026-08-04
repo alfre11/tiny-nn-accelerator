@@ -105,9 +105,33 @@ def main():
     # -----------------------------
     hidden_q, output_q, prediction = fixed_point_inference_single_q(x_q, params)
 
+    expected_hidden_all = np.zeros((len(X_test_q), 16), dtype=np.int32)
+    expected_output_all = np.zeros((len(X_test_q), 10), dtype=np.int32)
+    expected_predictions = np.zeros(len(X_test_q), dtype=np.int32)
+
+    for idx, sample_q in enumerate(X_test_q):
+        sample_hidden, sample_output, sample_prediction = (
+            fixed_point_inference_single_q(sample_q, params)
+        )
+        expected_hidden_all[idx] = sample_hidden
+        expected_output_all[idx] = sample_output
+        expected_predictions[idx] = sample_prediction[0]
+
     # -----------------------------
     # Write .mem files for RTL
     # -----------------------------
+    # Flattening the (N, 64) array in row-major order stores all 64 inputs
+    # for sample 0 first, followed by all 64 inputs for sample 1, and so on.
+    write_mem_file("data/mem/inputs.mem", X_test_q, 8)
+    write_mem_file(
+        "data/mem/expected_predictions.mem", expected_predictions, 32
+    )
+    write_mem_file(
+        "data/mem/expected_hidden_all.mem", expected_hidden_all, 32
+    )
+    write_mem_file(
+        "data/mem/expected_output_all.mem", expected_output_all, 32
+    )
     write_mem_file("data/mem/input.mem", x_q, 8)
 
     write_mem_file("data/mem/weights_l1.mem", W1_q, 8)
@@ -133,6 +157,10 @@ def main():
     print("Expected output:    ", output_q)
 
     print("\nFiles written:")
+    print("data/mem/inputs.mem")
+    print("data/mem/expected_predictions.mem")
+    print("data/mem/expected_hidden_all.mem")
+    print("data/mem/expected_output_all.mem")
     print("data/mem/input.mem")
     print("data/mem/weights_l1.mem")
     print("data/mem/biases_l1.mem")
