@@ -398,13 +398,6 @@ Planned or possible improvements:
 * Add valid/ready handshake signals
 * Add waveform screenshots to documentation
 
-## Possible Resume Bullet
-
-Designed and verified a fixed-point neural network accelerator in SystemVerilog for 8×8 digit classification, using int8 weights/inputs, int32 accumulation, FSM-controlled MAC execution, ReLU activation, and argmax classification.
-
-A stronger version with current results:
-
-Designed and verified a fixed-point neural network accelerator in SystemVerilog for 8×8 digit classification, matching Python reference hidden activations and output logits exactly while completing inference in 1,249 cycles with an estimated throughput of 80K inferences/sec at 100 MHz.
 
 ## Skills Demonstrated
 
