@@ -1,5 +1,9 @@
 `timescale 1ns/1ps
 
+`ifndef DUT_MODULE
+`define DUT_MODULE nn_accelerator
+`endif
+
 module nn_accelerator_tb;
 
     parameter int NUM_SAMPLES = 360;
@@ -28,7 +32,7 @@ module nn_accelerator_tb;
     int cycle_count;
     int total_cycles;
 
-    nn_accelerator dut (
+    `DUT_MODULE dut (
         .clk(clk),
         .rst(rst),
         .start(start),

@@ -217,6 +217,20 @@ Expected prediction: 7
 RTL prediction:      7
 ```
 
+## Multi-Sample Verification Results
+
+The RTL accelerator was tested across 100 input samples exported from the Python fixed-point reference flow.
+
+| Metric | Result |
+|---|---:|
+| Samples tested | 100 |
+| Prediction errors | 0 |
+| Hidden activation mismatches | 0 |
+| Output logit mismatches | 0 |
+| Total errors | 0 |
+| Average cycles per inference | 1249 |
+| Overall result | PASS |
+
 ### RTL Output Verification
 
 The RTL testbench verifies:
@@ -249,6 +263,12 @@ Clock period: 10 ns
 Inference latency: 12.49 µs
 Estimated throughput: 80,064 inferences/sec
 ```
+
+At a simulated 100 MHz clock, the accelerator completes each inference in 1249 cycles:
+
+```text
+Inference latency = 1249 cycles × 10 ns = 12.49 µs
+Throughput ≈ 80,064 inferences/sec
 
 ### Performance Table
 
