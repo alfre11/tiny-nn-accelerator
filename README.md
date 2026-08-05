@@ -334,6 +334,15 @@ PASS: all output logits match
 OVERALL RESULT: PASS
 ```
 
+## Sequential vs 4-MAC Accelerator
+
+| Design | MAC Units | Samples Tested | Prediction Errors | Hidden Mismatches | Output Mismatches | Avg Cycles | Latency @ 100 MHz | Throughput @ 100 MHz |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Sequential | 1 | 100 | 0 | 0 | 0 | 1249 | 12.49 µs | 80,064 inf/s |
+| 4-MAC Parallel | 4 | 100 | 0 | 0 | 0 | 361 | 3.61 µs | 277,008 inf/s |
+
+The 4-MAC parallel datapath reduced inference latency from 1249 cycles to 361 cycles, achieving a 3.46× speedup while preserving exact agreement with the Python fixed-point reference across predictions, hidden activations, and output logits.
+
 ## How to Run
 
 ### 1. Train the model
