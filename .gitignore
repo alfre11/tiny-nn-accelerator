@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Simulator outputs
+*.out
+*.vcd
+*.fst
+
+# Generated model and data files
+data/*.npy
+data/*.pth
+
+# General generated output
+/generated/
