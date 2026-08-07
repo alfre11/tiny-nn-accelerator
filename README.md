@@ -415,33 +415,37 @@ OVERALL RESULT: PASS
 
 Completed:
 
-* Trained 64→16→10 neural network on sklearn digits
+* Trained a 64→16→10 neural network on the sklearn digits dataset
 * Implemented fixed-point quantized inference in Python
-* Exported signed fixed-point values to `.mem` files
-* Implemented signed MAC unit in SystemVerilog
-* Implemented sequential accelerator FSM
-* Verified one test sample
-* Matched RTL hidden activations against Python expected values
-* Matched RTL output logits against Python expected values
-* Added cycle counting to the testbench
+* Exported signed fixed-point values to `.mem` files for RTL simulation
+* Implemented a signed single-MAC unit in SystemVerilog
+* Implemented a sequential FSM-controlled neural network accelerator
+* Implemented a 4-MAC parallel accelerator datapath
+* Built SystemVerilog testbenches for both accelerator versions
+* Verified RTL outputs against Python fixed-point reference values
+* Tested 100 samples automatically with 0 prediction errors
+* Matched RTL hidden activations and output logits against Python expected values
+* Added cycle counting to measure inference latency
+* Compared sequential and 4-MAC accelerator performance
+* Ran Yosys synthesis for both designs
+* Collected synthesized resource usage for latency/resource tradeoff analysis
 
 ## Future Improvements
 
-Planned or possible improvements:
+Planned or possible extensions:
 
-* Verify multiple test samples automatically
-* Add batch testing through repeated `.mem` generation
-* Add 4-MAC parallel datapath
-* Add 8-MAC parallel datapath
-* Compare sequential vs parallel cycle counts
-* Add synthesis results
-* Report FPGA resource usage: LUTs, flip-flops, DSPs, BRAM
-* Explore OpenLane ASIC synthesis/place-and-route
-* Add support for larger models
-* Add support for convolutional layers
-* Add memory-mapped input/output interface
+* Add an 8-MAC parallel datapath
+* Compare 1-MAC, 4-MAC, and 8-MAC latency/resource tradeoffs
+* Run FPGA-specific synthesis to report LUTs, flip-flops, DSPs, and BRAM usage
+* Add timing estimation or maximum clock frequency results
+* Add waveform screenshots from GTKWave
+* Add a memory-mapped input/output interface
 * Add valid/ready handshake signals
-* Add waveform screenshots to documentation
+* Add support for larger fully connected models
+* Add support for convolutional layers
+* Explore OpenLane ASIC synthesis/place-and-route
+* Create a block diagram image for the README
+* Add automated run scripts for training, export, simulation, and synthesis
 
 
 ## Skills Demonstrated
