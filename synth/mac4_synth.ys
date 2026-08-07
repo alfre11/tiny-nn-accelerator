@@ -1,0 +1,14 @@
+read_verilog -sv rtl/mac4_unit.sv rtl/nn_accelerator_4mac.sv
+
+hierarchy -top nn_accelerator_4mac
+
+proc
+opt
+fsm
+opt
+memory
+opt
+
+stat
+
+write_json reports/mac4_synth.json
