@@ -285,6 +285,7 @@ Throughput ≈ 80,064 inferences/sec
 | Hidden activations matched Python |                   Yes |
 | Output logits matched Python      |                   Yes |
 | Prediction matched Python         |                   Yes |
+```
 
 ## Example Testbench Output
 
