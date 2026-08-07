@@ -354,8 +354,8 @@ Both accelerator designs were synthesized with Yosys to compare the latency impr
 
 The 4-MAC accelerator reduced inference latency from 1249 cycles to 361 cycles, achieving a 3.46× speedup. This performance improvement came at the cost of increasing synthesized cell count from 1544 to 5393 cells, or about 3.49× more cells. The multiplier count increased from 1 to 4, matching the intended parallel MAC datapath.
 
-Calculations:
-Speedup = 1249 / 361 = 3.46×
+Calculations:  
+Speedup = 1249 / 361 = 3.46×  
 Cell increase = 5393 / 1544 = 3.49×
 
 ## How to Run
